@@ -3,6 +3,7 @@ import os
 import time
 import urllib2
 from bs4 import BeautifulSoup
+import datetime
 
 
 scriptDir = os.path.dirname(os.path.realpath(__file__))
@@ -75,15 +76,40 @@ def startJob(config, data):
             content = str(soup.textarea.string.encode('utf-8'))
             hash = str.__hash__(content)
 
-            title = soup.find("div", {"class": "paste_box_line1"}).get('title')
+            title = soup.find("div", {"class": "paste_box_line1"}).get('title').encode('utf-8')
 
             if hash not in data:
                 print('--> New Hash: ' + str(hash))
+                addData(config, title, content, hash)
                 data.append(hash)
 
         print('-> Done')
         print('-> Waiting: ' + str(config['timeout']) + ' seconds')
         time.sleep(config['timeout'])
+
+
+def addData(config, title, content, hash):
+    now = datetime.datetime.now()
+
+    year = now.year
+    month = '{:02d}'.format(now.month)
+    day = '{:02d}'.format(now.day)
+
+    hour = '{:02d}'.format(now.hour)
+    minute = '{:02d}'.format(now.minute)
+    second = '{:02d}'.format(now.second)
+
+    date = str(year) + '-' + str(month) + '-' + str(day)
+    time = str(hour) + ':' + str(minute) + ':' + str(second)
+
+    filename = str(date) + '_' + str(time) + '_' + str(hash) + '_' + str(title) + '.txt'
+
+    filePath = os.path.join(config['path'], filename)
+
+    if os.path.isfile(filePath) is False:
+        file = open(filePath, 'w')
+        file.write(content)
+        file.close()
 
 
 if __name__ == '__main__':
