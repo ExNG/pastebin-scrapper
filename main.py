@@ -39,7 +39,8 @@ def start(config):
     for item in os.listdir(config['path']):
         itemPath = os.path.join(config['path'], item)
         if os.path.isfile(itemPath):
-            data.append(str(item))
+            hash = item.split('_')[2]
+            data.append(str(hash))
     print('-> Done indexing')
 
     return (data)
