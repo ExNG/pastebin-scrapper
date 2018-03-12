@@ -9,7 +9,8 @@ scriptDir = os.path.dirname(os.path.realpath(__file__))
 config = {
     'path': os.path.join(scriptDir, 'data'),
     'pastebinarchive': 'https://pastebin.com/archive',
-    'timeout': 60
+    'pastebin': 'https://pastebin.com',
+    'timeout': 30
 }
 data = []
 
@@ -65,8 +66,23 @@ def startJob(config, data):
             if td.a and td.get('class') == None:
                 pasteIds.append(str(td.a.get('href')))
 
-        print('-> pasteIds', pasteIds)
+        # print('-> pasteIds', pasteIds)
+
+        for pasteId in pasteIds:
+            html = urllib2.urlopen(config['pastebin'] + pasteId).read()
+            soup = BeautifulSoup(html, 'html.parser')
+
+            content = str(soup.textarea.string.encode('utf-8'))
+            hash = str.__hash__(content)
+
+            title = soup.find("div", {"class": "paste_box_line1"}).get('title')
+
+            if hash not in data:
+                print('--> New Hash: ' + str(hash))
+                data.append(hash)
+
         print('-> Done')
+        print('-> Waiting: ' + str(config['timeout']) + ' seconds')
         time.sleep(config['timeout'])
 
 
