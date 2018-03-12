@@ -57,10 +57,14 @@ def startJob(config, data):
 
         html = urllib2.urlopen(config['pastebinarchive']).read()
         soup = BeautifulSoup(html, 'html.parser')
+
+        pasteIds = []
+
         for td in soup.table.find_all('td'):
             if td.a and td.get('class') == None:
-                print(td.a.get('href'))
+                pasteIds.append(str(td.a.get('href')))
 
+        print('-> pasteIds', pasteIds)
         print('-> Done')
         time.sleep(config['timeout'])
 
