@@ -1,12 +1,14 @@
 #!/usr/bin/python
 import os
 import time
-import urllib.request
+import urllib2
+from bs4 import BeautifulSoup
+
 
 scriptDir = os.path.dirname(os.path.realpath(__file__))
 config = {
     'path': os.path.join(scriptDir, 'data'),
-    'pastebinarchive': 'https://pastebin.com/archive/',
+    'pastebinarchive': 'https://pastebin.com/archive',
     'timeout': 60
 }
 data = []
@@ -51,10 +53,15 @@ Start loading pastebin's archive
 """
 def startJob(config, data):
     while True:
-        with urllib.request.urlopen('http://python.org/') as response:
-            html = response.read()
-            print(html)
+        print('### Starting query')
 
+        html = urllib2.urlopen(config['pastebinarchive']).read()
+        soup = BeautifulSoup(html, 'html.parser')
+        for td in soup.table.find_all('td'):
+            if td.a and td.get('class') == None:
+                print(td.a.get('href'))
+
+        print('-> Done')
         time.sleep(config['timeout'])
 
 
