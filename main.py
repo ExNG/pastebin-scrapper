@@ -64,7 +64,7 @@ def startJob(config, data):
         pasteIds = []
 
         for td in soup.table.find_all('td'):
-            if td.a and td.get('class') == None:
+            if td.a and td.get('class') == None and td.a.string.encode('utf-8') != 'Untitled':
                 pasteIds.append(str(td.a.get('href')))
 
         # print('-> pasteIds', pasteIds)
@@ -76,7 +76,7 @@ def startJob(config, data):
             content = str(soup.textarea.string.encode('utf-8'))
             hash = str.__hash__(content)
 
-            title = soup.find("div", {"class": "paste_box_line1"}).get('title').encode('utf-8')
+            title = soup.find("div", {"class": "paste_box_line1"}).get('title').encode('utf-8').replace('/', '')
 
             if hash not in data:
                 print('--> New Hash: ' + str(hash))
